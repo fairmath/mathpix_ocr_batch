@@ -156,3 +156,8 @@ pip-selfcheck.json
 .pytest_cache/
 
 .ipython/
+
+# Image output data
+tests/png
+# LaTeX conversion data
+tests/json

@@ -37,8 +37,8 @@ TOPIC_DISABLE_LEADER = False
 SSL_ENABLED = False
 SSL_CONTEXT = None
 SEARCH_PATTERN = "tests/data/**/*.tif"
-PNG_PATH = "test/png"
-JSON_PATH = "test/json"
+PNG_PATH = "tests/png"
+JSON_PATH = "tests/json"
 
 if SSL_ENABLED:
     # file in pem format containing the client certificate, as well as any ca certificates
