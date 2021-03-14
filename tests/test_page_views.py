@@ -1,5 +1,4 @@
 import pytest
-
 from page_views.agents import count_page_views, page_views
 from page_views.models import PageView
 

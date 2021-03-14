@@ -1,5 +1,4 @@
 import faust
-
 from simple_settings import settings
 
 app = faust.App(

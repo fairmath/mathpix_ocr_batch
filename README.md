@@ -1,5 +1,6 @@
 MathPix OCR Batch
 =================
+[![Build Status](https://travis-ci.com/fairmath/mathpix_ocr_batch.svg?branch=master)](https://travis-ci.com/fairmath/mathpix_ocr_batch)
 
 Program to batch convert images to LaTeX.
 
