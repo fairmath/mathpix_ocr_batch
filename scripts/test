@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+export PYTHONPATH=mathpix_ocr_batch
+export SIMPLE_SETTINGS=settings
+
+${PREFIX}pytest ${1-"./tests"} ${2}
+${PREFIX}black mathpix_ocr_batch tests/ --check --diff
+${PREFIX}flake8 mathpix_ocr_batch tests/

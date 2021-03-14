@@ -1,0 +1,11 @@
+replicas: 2
+
+hostname: 'mathpix_ocr_batch.com'
+env: prod
+
+worker:
+  debug: false
+  storeUri: "rocksdb://"
+
+bootstrapServers:
+  - kafka:9093

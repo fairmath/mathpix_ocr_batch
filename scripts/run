@@ -1,0 +1,6 @@
+#!/bin/sh
+set -x
+
+export SIMPLE_SETTINGS=mathpix_ocr_batch.settings
+
+PYTHONPATH=mathpix_ocr_batch venv/bin/faust -A app worker --web-port=$WORKER_PORT

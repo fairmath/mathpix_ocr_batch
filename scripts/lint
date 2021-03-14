@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+${PREFIX}isort mathpix_ocr_batch tests
+${PREFIX}black mathpix_ocr_batch tests

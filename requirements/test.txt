@@ -1,0 +1,15 @@
+-r base.txt
+
+# Code quality
+# ------------------------------------------------------------------------------
+black
+flake8
+isort
+
+# Testing
+# ------------------------------------------------------------------------------
+mypy
+pytest
+pytest_cases
+pytest-cookies
+pytest-asyncio
