@@ -1,3 +1,4 @@
 faust
 simple-settings
 Pillow
+requests

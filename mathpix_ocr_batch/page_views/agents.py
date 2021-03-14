@@ -1,14 +1,16 @@
+import base64
+import json
 import logging
 import os
 from glob import iglob
 from pathlib import Path
 
-from app import app
+import requests
+from PIL import Image as Pil_image
 from simple_settings import settings
 
+from app import app
 from .models import Image, PageView
-
-from PIL import Image as Pil_image
 
 page_view_topic = app.topic("page_views", value_type=PageView)
 hello_world_topic = app.topic("hello_world")
@@ -34,21 +36,61 @@ async def image_converter(events):
     tif_path = os.path.dirname(os.path.dirname(search_pattern))
     async for event in events.filter(lambda e: not e.png):
         logger.info("Converting %s to png", event)
-        Path(f"{settings.PNG_PATH}/{event.folder:03d}").mkdir(parents=True, exist_ok=True)
-        outfile = f"{settings.PNG_PATH}/{event.folder:03d}/{event.file:03d}.png"
+        Path(f"{settings.PNG_PATH}/{event.folder:03d}") \
+            .mkdir(parents=True, exist_ok=True)
+        outfile = await get_filename(event)
         if not os.path.isfile(outfile):
             im = Pil_image.open(f"{tif_path}/{event.folder:03d}/{event.file:03d}.tif")
             im.save(outfile)
         event.png = True
+
+async def get_filename(img, extension='png'):
+    if extension == 'png':
+        path = settings.PNG_PATH
+    else:
+        path = settings.JSON_PATH
+    return f"{path}/{img.folder:03d}/{img.file:03d}.{extension}"
+
+
+def convert_image(file_path):
+    image_uri = "data:image/png;base64," + \
+                base64.b64encode(
+                    open(file_path, "rb").read()
+                ).decode()
+    r = requests.post("https://api.mathpix.com/v3/text",
+                      data=json.dumps({'src': image_uri,
+                                       "formats": ["text", "data", "html"],
+                                       "data_options": {
+                                           "include_asciimath": True,
+                                           "include_latex": True
+                                       },
+                                       "include_line_data": True,
+                                       "include_detected_alphabets": True,
+                                       }),
+                      headers={"app_id": settings.MATHPIX_APP_ID,
+                               "app_key": settings.MATHPIX_APP_KEY,
+                               "Content-type": "application/json"})
+    return json.loads(r.text)
 
 
 @app.agent(images_topic)
 async def image_extractor(events):
     async for event in events.filter(lambda e: e.png and not e.json):
         logger.info("Converting %s to json", event)
-        print("TODO: Implement Png2Json conversion")
+        png_filename = await get_filename(event)
+        if os.path.isfile(png_filename):
+            Path(f"{settings.JSON_PATH}/{event.folder:03d}") \
+                .mkdir(parents=True, exist_ok=True)
+            outfile = await get_filename(event, 'json')
+            if not os.path.isfile(outfile):
+                res = convert_image(png_filename)
+                with open(outfile, 'w') as file_out:
+                    json.dump(res,
+                              file_out,
+                              indent=4,
+                              sort_keys=True,
+                              ensure_ascii=False)
         event.json = True
-
 
 @app.task
 async def scan_files():
