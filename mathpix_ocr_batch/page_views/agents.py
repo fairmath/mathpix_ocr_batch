@@ -26,11 +26,19 @@ async def count_page_views(views):
 
 
 @app.agent(images_topic)
-async def consume_image(events):
-    async for event in events:
-        logger.info(event)
+async def image_converter(events):
+    async for event in events.filter(lambda e: not e.png):
+        logger.info("Converting %s to png", event)
+        print("TODO: Implement Tif2Png conversion")
+        event.png = True
 
-        yield event
+
+@app.agent(images_topic)
+async def image_extractor(events):
+    async for event in events.filter(lambda e: e.png and not e.json):
+        logger.info("Converting %s to json", event)
+        print("TODO: Implement Png2Json conversion")
+        event.json = True
 
 
 @app.task
