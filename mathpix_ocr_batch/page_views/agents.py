@@ -25,7 +25,7 @@ async def image_converter(events):
         Path(f"{settings.PNG_PATH}/{event.folder:03d}").mkdir(parents=True, exist_ok=True)
         outfile = await get_filename(event)
         if not os.path.isfile(outfile):
-            im = Pil_image.open(f"{tif_path}/{event.folder:03d}/{event.file:03d}.tif")
+            im = Pil_image.open(f"{tif_path}/{event.folder:03d}/{event.file:08d}.TIF")
             im.save(outfile)
         event.png = True
         yield event
@@ -36,7 +36,7 @@ async def get_filename(img, extension="png"):
         path = settings.PNG_PATH
     else:
         path = settings.JSON_PATH
-    return f"{path}/{img.folder:03d}/{img.file:03d}.{extension}"
+    return f"{path}/{img.folder:03d}/{img.file:08d}.{extension}"
 
 
 def convert_image(file_path):
